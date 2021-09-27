@@ -1501,6 +1501,10 @@ unsigned long long zip_entry_header_offset(struct zip_t *zip) {
 }
 
 int zip_entry_write(struct zip_t *zip, const void *buf, size_t bufsize) {
+  return zip_entry_write_set_time(zip, buf, bufsize, NULL);
+}
+
+int zip_entry_write_set_time(struct zip_t *zip, const void *buf, size_t bufsize, const time_t *entry_time) {
   mz_uint level;
   mz_zip_archive *pzip = NULL;
   tdefl_status status;
@@ -1515,6 +1519,10 @@ int zip_entry_write(struct zip_t *zip, const void *buf, size_t bufsize) {
     zip->entry.uncomp_size += bufsize;
     zip->entry.uncomp_crc32 = (mz_uint32)mz_crc32(
         zip->entry.uncomp_crc32, (const mz_uint8 *)buf, bufsize);
+
+    if(entry_time != NULL) {
+      zip->entry.m_time = *entry_time;
+    }
 
     level = zip->level & 0xF;
     if (!level) {
