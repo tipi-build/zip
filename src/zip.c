@@ -1386,7 +1386,11 @@ int zip_entry_close(struct zip_t *zip) {
 
   entrylen = (mz_uint16)strlen(zip->entry.name);
 #ifndef MINIZ_NO_TIME
+  #ifdef MINIZ_FILE_TIME_UTC
+  mz_zip_time_t_to_dos_time_utc(zip->entry.m_time, &dos_time, &dos_date);
+  #else
   mz_zip_time_t_to_dos_time(zip->entry.m_time, &dos_time, &dos_date);
+  #endif
 #endif
 
   MZ_WRITE_LE32(local_dir_footer + 0, MZ_ZIP_DATA_DESCRIPTOR_ID);

@@ -1,0 +1,1 @@
+add_compile_definitions( MINIZ_FILE_TIME_UTC=1 )
