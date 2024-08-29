@@ -1126,7 +1126,11 @@ int zip_entry_close(struct zip_t *zip) {
   }
 
 #ifndef MINIZ_NO_TIME
+  #ifdef MINIZ_FILE_TIME_UTC
+  mz_zip_time_t_to_dos_time_utc(zip->entry.m_time, &dos_time, &dos_date);
+  #else
   mz_zip_time_t_to_dos_time(zip->entry.m_time, &dos_time, &dos_date);
+  #endif
 #endif
 
   if (!mz_zip_writer_create_local_dir_header(
