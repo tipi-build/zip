@@ -16,6 +16,12 @@ endif ()
 option(CMAKE_ENABLE_SANITIZERS "Enable zip sanitizers" OFF)
 option(ZIP_STATIC_PIC "Build static zip with PIC" ON)
 option(ZIP_BUILD_DOCS "Generate API documentation with Doxygen" OFF)
+option(OPTION_MINIZ_FILE_TIME_UTC "" ON)
+
+
+if(OPTION_MINIZ_FILE_TIME_UTC)
+  add_compile_definitions( MINIZ_FILE_TIME_UTC=1 )
+endif()
 
 if(ZIP_ENABLE_SHARABLE_FILE_OPEN)
 	add_definitions(-DZIP_ENABLE_SHARABLE_FILE_OPEN)
