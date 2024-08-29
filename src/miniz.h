@@ -5223,10 +5223,21 @@ static MZ_TIME_T mz_zip_dos_to_time_t(int dos_time, int dos_date) {
   tm.tm_hour = (dos_time >> 11) & 31;
   tm.tm_min = (dos_time >> 5) & 63;
   tm.tm_sec = (dos_time << 1) & 62;
+
+  #ifdef MINIZ_FILE_TIME_UTC
+  #ifdef _MSC_VER
+  return _mkgmtime(&tm);
+  #else
+  return timegm(&tm);
+  #endif
+  #else
   return mktime(&tm);
+  #endif
 }
 
 #ifndef MINIZ_NO_ARCHIVE_WRITING_APIS
+
+#ifdef MINIZ_FILE_TIME_UTC
 static void mz_zip_time_t_to_dos_time_utc(MZ_TIME_T time, mz_uint16 *pDOS_time,
                                       mz_uint16 *pDOS_date) {
 #ifdef _MSC_VER
@@ -5247,8 +5258,8 @@ static void mz_zip_time_t_to_dos_time_utc(MZ_TIME_T time, mz_uint16 *pDOS_time,
   *pDOS_date = (mz_uint16)(((tm->tm_year + 1900 - 1980) << 9) +
                            ((tm->tm_mon + 1) << 5) + tm->tm_mday);
 }
+#endif
 #endif /* MINIZ_NO_ARCHIVE_WRITING_APIS */
-
 
 #ifndef MINIZ_NO_ARCHIVE_WRITING_APIS
 static void mz_zip_time_t_to_dos_time(MZ_TIME_T time, mz_uint16 *pDOS_time,

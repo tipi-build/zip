@@ -278,6 +278,7 @@ MU_TEST(test_entries_time) {
   mu_assert_int_eq(0, zip_entry_set_time(zip, some_time));
   mu_assert_int_eq(0, zip_entry_get_time(zip, &result_immediate));   
 
+  fprintf(stdout, "AAAAAAAAA %ld :: %ld", result_immediate, some_time);
   mu_assert(result_immediate == some_time, "File entry time in zip is not 1624943286 but it should");  
   mu_assert_int_eq(0, zip_entry_close(zip));
 
