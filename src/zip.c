@@ -1208,11 +1208,27 @@ unsigned int zip_entry_crc32(struct zip_t *zip) {
   return zip ? zip->entry.uncomp_crc32 : 0;
 }
 
-int zip_entry_write(struct zip_t *zip, const void *buf, size_t bufsize) {
-  return zip_entry_write_set_time(zip, buf, bufsize, NULL);
+int zip_entry_set_time(struct zip_t *zip, const time_t entry_time) {
+  if (!zip) {
+    // zip_t handler is not initialized
+    return ZIP_ENOINIT;
+  }
+
+  zip->entry.m_time = entry_time;
+  return 0;
 }
 
-int zip_entry_write_set_time(struct zip_t *zip, const void *buf, size_t bufsize, const time_t *entry_time) {
+int zip_entry_get_time(struct zip_t *zip, time_t *entry_time) {
+  if (!zip) {
+    // zip_t handler is not initialized
+    return ZIP_ENOINIT;
+  }
+
+  *entry_time = zip->entry.m_time;
+  return 0;
+}
+
+int zip_entry_write(struct zip_t *zip, const void *buf, size_t bufsize) {
   mz_uint level;
   mz_zip_archive *pzip = NULL;
   tdefl_status status;
@@ -1223,14 +1239,11 @@ int zip_entry_write_set_time(struct zip_t *zip, const void *buf, size_t bufsize,
   }
 
   pzip = &(zip->archive);
+
   if (buf && bufsize > 0) {
     zip->entry.uncomp_size += bufsize;
     zip->entry.uncomp_crc32 = (mz_uint32)mz_crc32(
         zip->entry.uncomp_crc32, (const mz_uint8 *)buf, bufsize);
-
-    if(entry_time != NULL) {
-      zip->entry.m_time = *entry_time;
-    }
 
     level = zip->level & 0xF;
     if (!level) {

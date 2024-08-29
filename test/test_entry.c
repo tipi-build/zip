@@ -257,6 +257,46 @@ MU_TEST(test_entries_delete) {
   zip_close(zip);
 }
 
+MU_TEST(test_entries_time) {
+
+  // add a file and check if we can modify the stat time
+  struct zip_t *zip = zip_open(ZIPNAME, 0, 'a');
+
+  mu_check(zip != NULL);
+
+  const time_t some_time = 1624943286; // Jun 29 2021 07:08 because I changed the second most significant digit from 7 => 6 / should be fine unless a time traveler gets past here...
+  time_t original = 0;
+  time_t result_immediate = 0;  
+
+  mu_assert_int_eq(0, zip_entry_open(zip, "test/test-time.txt"));
+  mu_assert_int_eq(0, zip_entry_write(zip, TESTDATA1, strlen(TESTDATA1)));
+
+  mu_assert_int_eq(0, zip_entry_get_time(zip, &original));  
+
+  mu_assert(original > some_time, "File entry time in zip smaller than 1624943286, time travel detected v.v");
+  
+  mu_assert_int_eq(0, zip_entry_set_time(zip, some_time));
+  mu_assert_int_eq(0, zip_entry_get_time(zip, &result_immediate));   
+
+  mu_assert(result_immediate == some_time, "File entry time in zip is not 1624943286 but it should");  
+  mu_assert_int_eq(0, zip_entry_close(zip));
+
+  zip_close(zip);
+
+  time_t result_reopnened = 0;
+  zip = zip_open(ZIPNAME, 0, 'r');
+  mu_check(zip != NULL);
+
+  mu_assert_int_eq(0, zip_entry_open(zip, "test/test-time.txt"));
+  mu_assert_int_eq(0, zip_entry_get_time(zip, &result_reopnened));
+
+  mu_assert(result_reopnened == some_time, "File entry time in reopened zip is not 1624943286 but it should");
+  mu_assert_int_eq(0, zip_entry_close(zip));
+
+  zip_close(zip);  
+}
+
+
 MU_TEST_SUITE(test_entry_suite) {
   MU_SUITE_CONFIGURE(&test_setup, &test_teardown);
 
@@ -266,6 +306,7 @@ MU_TEST_SUITE(test_entry_suite) {
   MU_RUN_TEST(test_entry_read);
   MU_RUN_TEST(test_list_entries);
   MU_RUN_TEST(test_entries_delete);
+  MU_RUN_TEST(test_entries_time);
 }
 
 #define UNUSED(x) (void)x

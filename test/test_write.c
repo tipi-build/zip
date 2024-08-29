@@ -52,7 +52,13 @@ MU_TEST(test_write_set_date) {
 
   time_t zipentry_time = 1632565580;
 
-  mu_assert_int_eq(0, zip_entry_write_set_time(zip, TESTDATA1, strlen(TESTDATA1), &zipentry_time));
+  mu_assert_int_eq(0, zip_entry_write(zip, TESTDATA1, strlen(TESTDATA1)));
+  mu_assert_int_eq(0, zip_entry_set_time(zip, zipentry_time));
+
+  time_t zipentry_time_read = 0;
+  mu_assert(zipentry_time != zipentry_time_read, "");
+  mu_assert_int_eq(0, zip_entry_get_time(zip, &zipentry_time_read));
+  mu_assert(zipentry_time == zipentry_time_read, "");
   mu_assert_int_eq(0, strcmp(zip_entry_name(zip), "test/test-1.txt"));
   mu_assert_int_eq(0, zip_entry_index(zip));
   mu_assert_int_eq(strlen(TESTDATA1), zip_entry_size(zip));

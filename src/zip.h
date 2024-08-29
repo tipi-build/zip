@@ -246,19 +246,14 @@ extern ZIP_EXPORT int zip_entry_write(struct zip_t *zip, const void *buf,
                                       size_t bufsize);
 
 /**
- * Compresses an input buffer for the current zip entry and allows overriding/setting
- * a specific zip filesystem time. 
- *
- * @param zip zip archive handler.
- * @param buf input buffer.
- * @param bufsize input buffer size (in bytes).
- * @param entry_time timestamp of the file
- *
- * @return the return code - 0 on success, negative number (< 0) on error.
+ * Set the file time of the current zip entry
  */
-extern ZIP_EXPORT int zip_entry_write_set_time(struct zip_t *zip, const void *buf,
-                                      size_t bufsize, const time_t *entry_time);
+extern ZIP_EXPORT int zip_entry_set_time(struct zip_t *zip, const time_t entry_time);
 
+/**
+ * Get the file time of the current zip entry
+ */
+extern ZIP_EXPORT int zip_entry_get_time(struct zip_t *zip, time_t *entry_time);
 
 /**
  * Compresses a file for the current zip entry.
