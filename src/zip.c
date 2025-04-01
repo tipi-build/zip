@@ -937,7 +937,7 @@ int zip_entry_open(struct zip_t *zip, const char *entryname) {
   // UNIX or APPLE
 #if MZ_PLATFORM == 3 || MZ_PLATFORM == 19
   //zip->entry.external_attr = (mz_uint32)((0755 & 0xFFFF) << 16);
-  zip->entry.external_attr |= (mz_uint32)(0100777) << 16;
+  zip->entry.external_attr = (mz_uint32)(0100777) << 16;
 
   // regular file with rw-r--r-- persmissions
   //zip->entry.external_attr = (mz_uint32)(0100644) << 16;
@@ -1298,8 +1298,7 @@ int zip_entry_fwrite(struct zip_t *zip, const char *filename) {
     zip->entry.external_attr |= 0x01;
   }
   zip->entry.external_attr |= (mz_uint32)((file_stat.st_mode & 0xFFFF) << 16);
-  zip->entry.external_attr |= (mz_uint32)((0755 & 0xFFFF) << 16);
-
+  zip->entry.external_attr = (mz_uint32)((0755 & 0xFFFF) << 16);
 
   zip->entry.m_time = file_stat.st_mtime;
 
