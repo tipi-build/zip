@@ -1506,6 +1506,7 @@ unsigned long long zip_entry_header_offset(struct zip_t *zip) {
 
 int zip_entry_write(struct zip_t *zip, const void *buf, size_t bufsize) {
   return zip_entry_write_set_time(zip, buf, bufsize, NULL);
+
 int zip_entry_set_time(struct zip_t *zip, const time_t entry_time) {
   if (!zip) {
     // zip_t handler is not initialized

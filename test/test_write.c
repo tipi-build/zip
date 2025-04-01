@@ -100,6 +100,34 @@ MU_TEST(test_write_set_date) {
   zip_close(zip);
 }
 
+MU_TEST(test_write_set_date) {
+  struct zip_t *zip = zip_open(ZIPNAME, ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
+  mu_check(zip != NULL);
+
+  mu_assert_int_eq(0, zip_entry_open(zip, "test/test-1.txt"));
+
+  time_t zipentry_time = 1632565580;
+
+  mu_assert_int_eq(0, zip_entry_write(zip, TESTDATA1, strlen(TESTDATA1)));
+  mu_assert_int_eq(0, zip_entry_set_time(zip, zipentry_time));
+
+  time_t zipentry_time_read = 0;
+  mu_assert(zipentry_time != zipentry_time_read, "");
+  mu_assert_int_eq(0, zip_entry_get_time(zip, &zipentry_time_read));
+  mu_assert(zipentry_time == zipentry_time_read, "");
+  mu_assert_int_eq(0, strcmp(zip_entry_name(zip), "test/test-1.txt"));
+  mu_assert_int_eq(0, zip_entry_index(zip));
+  mu_assert_int_eq(strlen(TESTDATA1), zip_entry_size(zip));
+  mu_check(CRC32DATA1 == zip_entry_crc32(zip));
+  mu_assert_int_eq(0, zip_entry_close(zip));
+
+  mu_assert_int_eq(0, zip_is64(zip));
+
+  // TODO add api to get zip file info as well and test for that to be consistent
+
+  zip_close(zip);
+}
+
 MU_TEST(test_fwrite) {
   const char *filename = WFILE;
   FILE *stream = NULL;
